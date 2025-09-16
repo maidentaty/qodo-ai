@@ -1,7 +1,4 @@
 
-
-
-
 <div align="center">
 <div align="center">
 
@@ -52,7 +49,7 @@ We invite the community to collaborate and help extend the capabilities of Qodo 
 
 
 ## Overview
-This tool is part of a broader suite of utilities designed to automate the creation of unit tests for software projects. Utilizing advanced Generative AI models, it aims to simplify and expedite the testing process, ensuring high-quality software development. The system comprises several components:
+This tool is part of a broader suite of utilities designed to automate the creation of unit tests for Python projects. Utilizing advanced Generative AI models, it aims to simplify and expedite the testing process, ensuring high-quality software development. The system comprises several components:
 1. **Test Runner:** Executes the command or scripts to run the test suite and generate code coverage reports.
 2. **Coverage Parser:** Validates that code coverage increases as tests are added, ensuring that new tests contribute to the overall test effectiveness.
 3. **Prompt Builder:** Gathers necessary data from the codebase and constructs the prompt to be passed to the Large Language Model (LLM).
@@ -65,8 +62,7 @@ Before you begin, make sure you have the following:
 - `OPENAI_API_KEY` set in your environment variables, which is required for calling the OpenAI API.
 - Code Coverage tool: A Cobertura XML code coverage report is required for the tool to function correctly.
   - For example, in Python one could use `pytest-cov`. Add the `--cov-report=xml` option when running Pytest.
-  - Note: We are actively working on adding more coverage types but please feel free to open a PR and contribute to `cover_agent/CoverageProcessor.py`
-
+ 
 If running directly from the repository you will also need:
 - Python installed on your system.
 - Poetry installed for managing Python package dependencies. Installation instructions for Poetry can be found at [https://python-poetry.org/docs/](https://python-poetry.org/docs/).
@@ -122,42 +118,6 @@ cover-agent \
   --coverage-type "cobertura" \
   --desired-coverage 70 \
   --max-iterations 10
-```
-
-#### Go
-For an example using **go** `cd` into `templated_tests/go_webservice`, set up the project following the `README.md`.
-To work with coverage reporting, you need to install `gocov` and `gocov-xml`. Run the following commands to install these tools:
-```shell
-go install github.com/axw/gocov/gocov@v1.1.0
-go install github.com/AlekSi/gocov-xml@v1.1.0
-```
-and then run the following command:
-```shell
-cover-agent \
-  --source-file-path "app.go" \
-  --test-file-path "app_test.go" \
-  --code-coverage-report-path "coverage.xml" \
-  --test-command "go test -coverprofile=coverage.out && gocov convert coverage.out | gocov-xml > coverage.xml" \
-  --test-command-dir $(pwd) \
-  --coverage-type "cobertura" \
-  --desired-coverage 70 \
-  --max-iterations 1
-```
-
-#### Java
-For an example using **java** `cd` into `templated_tests/java_gradle`, set up the project following the [README.md](templated_tests/java_gradle/README.md).
-To work with jacoco coverage reporting, follow the [README.md](templated_tests/java_gradle/README.md) Requirements section:
-and then run the following command:
-```shell
-cover-agent \
-  --source-file-path="src/main/java/com/davidparry/cover/SimpleMathOperations.java" \
-  --test-file-path="src/test/groovy/com/davidparry/cover/SimpleMathOperationsSpec.groovy" \
-  --code-coverage-report-path="build/reports/jacoco/test/jacocoTestReport.csv" \
-  --test-command="./gradlew clean test jacocoTestReport" \
-  --test-command-dir=$(pwd) \
-  --coverage-type="jacoco" \
-  --desired-coverage=70 \
-  --max-iterations=1
 ```
 
 ### Record & Replay Feature
@@ -262,7 +222,7 @@ cover-agent \
 See [Contributing](CONTRIBUTING.md) for more information on how to contribute to this project.
 
 ## Documentation
-* [Instructions for Adding Another Coverage Type to the `CoverageProcessor` Class](docs/add_new_coverage_type_instructions.md)
+- Note: Currently only Cobertura XML format is supported
 * [Using a Test Database with Cover Agent](docs/database_usage.md)
 * [Cover Agent Feature Flags](docs/features.md)
 * [Repo Coverage](docs/repo_coverage.md)
@@ -273,8 +233,7 @@ See [Contributing](CONTRIBUTING.md) for more information on how to contribute to
 ## Roadmap
 Below is the roadmap of planned features, with the current implementation status:
 
-- [x] Automatically generates unit tests for your software projects, utilizing advanced AI models to ensure comprehensive test coverage and quality assurance. (similar to Meta)
-  - [x] Being able to generate tests for different programming languages
+- [x] Automatically generates unit tests for your Python projects, utilizing advanced AI models to ensure comprehensive test coverage and quality assurance. (similar to Meta)
   - [ ] Being able to deal with a large variety of testing scenarios
   - [ ] Generate a behavior analysis for the code under test, and generate tests accordingly
   - [x] Check test flakiness, e.g. by running 5 times as suggested by TestGen-LLM
