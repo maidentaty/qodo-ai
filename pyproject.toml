@@ -23,8 +23,6 @@ python-dotenv = "^1.1.0"
 
 # Infrastructure Dependencies
 docker = "^7.1.0"
-boto3 = "^1.36.25"
-google-cloud-aiplatform = "^1.81.0"
 
 # LLM Dependencies
 litellm = "^1.61.13"
