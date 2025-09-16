@@ -1,16 +1,19 @@
 ## Repo Coverage
 
+> **Note:** This is a Python-focused fork of the original Qodo Cover project, 
+> designed for educational purposes and specialized in Python test generation.
+
 New mode - scan an entire repo, auto identify the test files, auto collect context for each test file, and extend the test suite with new tests.
 How to run:
 
-1) Install cover-agent on your existing project venv: `pip install git+https://github.com/Codium-ai/cover-agent.git`
+1) Install cover-agent on your existing project venv: `pip install git+https://github.com/maidentaty/cover-agent.git`
 2) If your project doesn't have a `pyproject.toml` file, create one with:
 ```
 [tool.poetry]
 name = "cover-agent"
 version = "0.0.0" # Placeholder
 description = "Cover Agent Tool"
-authors = ["QodoAI"]
+authors = ["maidentaty"]
 license = "AGPL-3.0 license"
 readme = "README.md"
 ```
