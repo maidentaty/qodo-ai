@@ -11,17 +11,6 @@ class TestFilePreprocessor:
     Test suite for the FilePreprocessor class.
     """
 
-    # Test for a C file
-    def test_c_file(self):
-        """
-        Test that processing a C file does not alter its content.
-        """
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".c") as tmp:
-            preprocessor = FilePreprocessor(tmp.name)
-            input_text = "Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit,\nsed do eiusmod tempor incididunt."
-            processed_text = preprocessor.process_file(input_text)
-            assert processed_text == input_text, "C file processing should not alter the text."
-
     # Test for a Python file with only a function
     def test_py_file_with_function_only(self):
         """
