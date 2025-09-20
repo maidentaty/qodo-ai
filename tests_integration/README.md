@@ -34,51 +34,6 @@ poetry run python tests_integration/run_test_with_docker.py \
   --model "gpt-4o-mini"
 ```
 
-#### Go Webservice Example
-```shell
-poetry run python tests_integration/run_test_with_docker.py \
-  --dockerfile "templated_tests/go_webservice/Dockerfile" \
-  --source-file-path "app.go" \
-  --test-file-path "app_test.go" \
-  --test-command "go test -coverprofile=coverage.out && gocov convert coverage.out | gocov-xml > coverage.xml" \
-  --model "gpt-4o"
-```
-
-#### Java Gradle Example
-```shell
-poetry run python tests_integration/run_test_with_docker.py \
-  --dockerfile "templated_tests/java_gradle/Dockerfile" \
-  --source-file-path "src/main/java/com/davidparry/cover/SimpleMathOperations.java" \
-  --test-file-path "src/test/groovy/com/davidparry/cover/SimpleMathOperationsSpec.groovy" \
-  --test-command "./gradlew clean test jacocoTestReport" \
-  --coverage-type "jacoco" \
-  --code-coverage-report-path "build/reports/jacoco/test/jacocoTestReport.csv" \
-  --model "gpt-4o"
-```
-
-#### Java Spring Calculator Example
-```shell
-poetry run python tests_integration/run_test_with_docker.py \
-  --dockerfile "templated_tests/java_spring_calculator/Dockerfile" \
-  --source-file-path "src/main/java/com/example/calculator/controller/CalculatorController.java" \
-  --test-file-path "src/test/java/com/example/calculator/controller/CalculatorControllerTest.java" \
-  --test-command "mvn verify" \
-  --coverage-type "jacoco" \
-  --code-coverage-report-path "target/site/jacoco/jacoco.csv" \
-  --model "gpt-4o"
-```
-
-#### VanillaJS Example
-```shell
-poetry run python tests_integration/run_test_with_docker.py \
-  --dockerfile "templated_tests/js_vanilla/Dockerfile" \
-  --source-file-path "ui.js" \
-  --test-file-path "ui.test.js" \
-  --test-command "npm run test:coverage" \
-  --code-coverage-report-path "coverage/coverage.xml" \
-  --model "gpt-4o"
-```
-
 ### Using Different LLMs
 You can use a different LLM by passing in the `--model` and `--api-base` parameters. For example, to use a locally hosted LLM with Ollama you can pass in:
 ```shell
