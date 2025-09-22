@@ -13,10 +13,7 @@ async def run():
     settings = get_settings().get("default")
     args = parse_args_full_repo(settings)
 
-    if args.project_language == "python":
-        context_helper = ContextHelper(args)
-    else:
-        raise NotImplementedError("Unsupported language: {}".format(args.project_language))
+    context_helper = ContextHelper(args)
 
     # scan the project directory for test files
     test_files = find_test_files(args)
