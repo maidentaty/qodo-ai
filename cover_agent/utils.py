@@ -380,13 +380,13 @@ def find_test_files(args) -> list:
                     continue
             if "test" in root.split(os.sep):
                 for file in files:
-                    if filename_to_lang(file) == language:
+                    if file.endswith(".py"):
                         test_files.append(os.path.join(root, file))
             else:
                 # Check if any file contains 'test' in its name
                 for file in files:
                     if "test" in file:
-                        if filename_to_lang(file) == language:
+                        if file.endswith(".py"):
                             test_files.append(os.path.join(root, file))
         if len(test_files) >= MAX_TEST_FILES and args.look_for_oldest_unchanged_test_file:
             print(f"Found {len(test_files)} test files. Stopping at {MAX_TEST_FILES} test files.")
