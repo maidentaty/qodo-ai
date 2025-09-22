@@ -94,8 +94,6 @@ class CoverageProcessor:
                 return self.parse_coverage_report_cobertura()
             elif self.coverage_type == "lcov":
                 return self.parse_coverage_report_lcov()
-            elif self.coverage_type == "jacoco":
-                return self.parse_coverage_report_jacoco()
             else:
                 raise ValueError(f"Unsupported coverage report type: {self.coverage_type}")
         else:
@@ -104,8 +102,6 @@ class CoverageProcessor:
                 return self.parse_coverage_report_cobertura(filename=os.path.basename(self.src_file_path))
             elif self.coverage_type == "lcov":
                 return self.parse_coverage_report_lcov()
-            elif self.coverage_type == "jacoco":
-                return self.parse_coverage_report_jacoco()
             elif self.coverage_type == "diff_cover_json":
                 return self.parse_json_diff_coverage_report()
             else:
@@ -229,138 +225,6 @@ class CoverageProcessor:
         coverage_percentage = (len(lines_covered) / total_lines) if total_lines > 0 else 0
 
         return lines_covered, lines_missed, coverage_percentage
-
-    def parse_coverage_report_jacoco(self) -> Tuple[list, list, float]:
-        """
-        Parses a JaCoCo XML code coverage report to extract covered and missed line numbers for a specific file,
-        and calculates the coverage percentage.
-
-        Returns: Tuple[list, list, float]: A tuple containing empty lists of covered and missed line numbers,
-        and the coverage percentage. The reason being the format of the report for jacoco gives the totals we do not
-        sum them up. to stick with the current contract of the code and to do little change returning empty arrays.
-        I expect this should bring up a discussion on introduce a factory for different CoverageProcessors. Where the
-        total coverage percentage is returned to be evaluated only.
-        """
-        lines_covered, lines_missed = [], []
-        source_file_extension = self.get_file_extension(self.src_file_path)
-
-        package_name, class_name = "", ""
-        if source_file_extension == "java":
-            package_name, class_name = self.extract_package_and_class_java()
-        elif source_file_extension == "kt":
-            package_name, class_name = self.extract_package_and_class_kotlin()
-        else:
-            self.logger.warn(f"Unsupported Bytecode Language: {source_file_extension}. Using default Java logic.")
-            package_name, class_name = self.extract_package_and_class_java()
-
-        file_extension = self.get_file_extension(self.file_path)
-
-        missed, covered = 0, 0
-        if file_extension == "xml":
-            lines_missed, lines_covered = self.parse_missed_covered_lines_jacoco_xml(class_name)
-            missed, covered = len(lines_missed), len(lines_covered)
-        elif file_extension == "csv":
-            missed, covered = self.parse_missed_covered_lines_jacoco_csv(package_name, class_name)
-        else:
-            raise ValueError(f"Unsupported JaCoCo code coverage report format: {file_extension}")
-
-        total_lines = missed + covered
-        coverage_percentage = (float(covered) / total_lines) if total_lines > 0 else 0
-
-        return lines_covered, lines_missed, coverage_percentage
-
-    def parse_missed_covered_lines_jacoco_xml(self, class_name: str) -> tuple[list, list]:
-        """Parses a JaCoCo XML code coverage report to extract covered and missed line numbers for a specific file."""
-        tree = ET.parse(self.file_path)
-        root = tree.getroot()
-        sourcefile = root.find(f".//sourcefile[@name='{class_name}.java']") or root.find(
-            f".//sourcefile[@name='{class_name}.kt']"
-        )
-
-        if sourcefile is None:
-            return [], []
-
-        missed, covered = [], []
-        for line in sourcefile.findall("line"):
-            if line.attrib.get("mi") == "0":
-                covered += [int(line.attrib.get("nr", 0))]
-            else:
-                missed += [int(line.attrib.get("nr", 0))]
-
-        return missed, covered
-
-    def parse_missed_covered_lines_jacoco_csv(self, package_name: str, class_name: str) -> tuple[int, int]:
-        with open(self.file_path, "r") as file:
-            reader = csv.DictReader(file)
-            missed, covered = 0, 0
-            for row in reader:
-                if row["PACKAGE"] == package_name and row["CLASS"] == class_name:
-                    try:
-                        missed = int(row["LINE_MISSED"])
-                        covered = int(row["LINE_COVERED"])
-                        break
-                    except KeyError as e:
-                        self.logger.error(f"Missing expected column in CSV: {str(e)}")
-                        raise
-
-        return missed, covered
-
-    def extract_package_and_class_java(self):
-        package_pattern = re.compile(r"^\s*package\s+([\w\.]+)\s*;.*$")
-        class_pattern = re.compile(r"^\s*(?:public\s+)?(?:class|interface|record)\s+(\w+)(?:(?:<|\().*?(?:>|\)))?(?:\s+extends|\s+implements|\s*\{|$)")
-
-
-        package_name = ""
-        class_name = ""
-        try:
-            with open(self.src_file_path, "r") as file:
-                for line in file:
-                    if not package_name:  # Only match package if not already found
-                        package_match = package_pattern.match(line)
-                        if package_match:
-                            package_name = package_match.group(1)
-
-                    if not class_name:  # Only match class if not already found
-                        class_match = class_pattern.match(line)
-                        if class_match:
-                            class_name = class_match.group(1)
-
-                    if package_name and class_name:  # Exit loop if both are found
-                        break
-        except (FileNotFoundError, IOError) as e:
-            self.logger.error(f"Error reading file {self.src_file_path}: {e}")
-            raise
-
-        return package_name, class_name
-
-    def extract_package_and_class_kotlin(self):
-        package_pattern = re.compile(r"^\s*package\s+([\w.]+)\s*(?:;)?\s*(?://.*)?$")
-        class_pattern = re.compile(
-            r"^\s*(?:public|internal|abstract|data|sealed|enum|open|final|private|protected)*\s*class\s+(\w+).*"
-        )
-
-        package_name = ""
-        class_name = ""
-        try:
-            with open(self.src_file_path, "r") as file:
-                for line in file:
-                    if not package_name:  # Only match package if not already found
-                        package_match = package_pattern.match(line)
-                        if package_match:
-                            package_name = package_match.group(1)
-
-                    if not class_name:  # Only match class if not already found
-                        class_match = class_pattern.match(line)
-                        if class_match:
-                            class_name = class_match.group(1)
-
-                    if package_name and class_name:  # Exit loop if both are found
-                        break
-        except (FileNotFoundError, IOError) as e:
-            self.logger.error(f"Error reading file {self.src_file_path}: {e}")
-            raise
-
-        return package_name, class_name
 
     def parse_json_diff_coverage_report(self) -> Tuple[List[int], List[int], float]:
         """
