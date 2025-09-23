@@ -13,16 +13,11 @@ class CoverageType(Enum):
     An enumeration representing different types of code coverage reports.
 
     Attributes:
-        LCOV: Represents the LCOV coverage report format.
         COBERTURA: Represents the Cobertura coverage report format.
-        JACOCO: Represents the JaCoCo coverage report format.
     """
 
-    LCOV = "lcov"
     COBERTURA = "cobertura"
-    JACOCO = "jacoco"
-
-
+  
 @dataclass
 class CoverAgentConfig:
     """
@@ -37,7 +32,6 @@ class CoverAgentConfig:
         test_command (str): The command to run tests and generate coverage report.
         test_command_dir (str): The directory to run the test command in.
         included_files (str): List of files to include in the coverage.
-                              For example, "--included-files library1.c library2.c.".
         coverage_type (CoverageType): Type of coverage report.
         report_filepath (str): Path to the output report file.
         desired_coverage (int): The desired coverage percentage
