@@ -24,7 +24,7 @@ ROOT_IMPORTANT_FILES = [
     "SECURITY.md",
     "SECURITY.txt",
     "CODEOWNERS",
-    # Package Management and Dependencies
+    # Python Package Management and Dependencies
     "requirements.txt",
     "Pipfile",
     "Pipfile.lock",
@@ -47,9 +47,9 @@ ROOT_IMPORTANT_FILES = [
     "tox.ini",
     ".yamllint",
     "pyrightconfig.json",
-    # Build and Compilation
+    # Python Build and Compilation
     "MANIFEST.in",
-    # Testing
+    # Python Testing
     "pytest.ini",
     # CI/CD
     ".travis.yml",
@@ -67,12 +67,7 @@ ROOT_IMPORTANT_FILES = [
     "Dockerfile",
     "docker-compose.yml",
     "docker-compose.override.yml",
-    # Cloud and Serverless
-    "serverless.yml",
-    "firebase.json",
-    "now.json",
-    "netlify.toml",
-    "vercel.json",
+    # Cloud and Infrastructure (Language Agnostic)
     "app.yaml",
     "terraform.tf",
     "main.tf",
@@ -81,40 +76,33 @@ ROOT_IMPORTANT_FILES = [
     "ansible.cfg",
     "kubernetes.yaml",
     "k8s.yaml",
-    # Database
+    # Database (Generic)
     "schema.sql",
-    "liquibase.properties",
-    "flyway.conf",
-    # API Documentation
+    # API Documentation (Language Agnostic)
     "swagger.yaml",
     "swagger.json",
     "openapi.yaml",
     "openapi.json",
-    # Development environment
-    ".nvmrc",
-    ".ruby-version",
+    # Python Development Environment
     ".python-version",
     "Vagrantfile",
-    # Quality and metrics
+    # Quality and Metrics
     ".codeclimate.yml",
     "codecov.yml",
-    # Documentation
+    # Documentation (Language Agnostic)
     "mkdocs.yml",
-    "_config.yml",
-    "book.toml",
     "readthedocs.yml",
     ".readthedocs.yaml",
-    # Linting and formatting
+    # Python Linting and Formatting
     ".isort.cfg",
     ".markdownlint.json",
     ".markdownlint.yaml",
     # Security
     ".bandit",
     ".secrets.baseline",
-    # Misc
+    # Python Misc
     ".pypirc",
     ".gitkeep",
-    ".npmignore",
 ]
 
 
@@ -138,9 +126,9 @@ def is_important(file_path):
 
 def filter_important_files(file_paths):
     """
-    Filter a list of file paths to return only those that are commonly important in codebases.
+    Filter a list of file paths to return only those that are commonly important in Python codebases.
 
     :param file_paths: List of file paths to check
-    :return: List of file paths that match important file patterns
+    :return: List of file paths that match important file patterns for Python projects
     """
     return list(filter(is_important, file_paths))
