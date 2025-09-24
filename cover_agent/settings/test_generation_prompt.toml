@@ -69,7 +69,6 @@ class SingleTest(BaseModel):
     test_behavior: str = Field(description="Short description of the behavior the test covers")
     lines_to_cover: str = Field(description="A list of line numbers, currently uncovered, that this specific new test aims to cover")
     test_name: str = Field(description=" A short test name, in snake case, that reflects the behaviour to test")
-{%- endif %}
     test_code: str = Field(description="A new '{{ testing_framework }}' test function that extends the existing test suite, and tests the behavior described in 'test_behavior'. The test should be written like it's part of the existing test suite, if there is one, and it can use existing helper functions, setup, or teardown code. Don't include new imports here, use 'new_imports_code' section instead.")
     new_imports_code: str = Field(description="New imports that are required to run the new test function, and are not already imported in the test file. Give an empty string if no new imports are required. If relevant, add new imports as 'import ...' lines.")
     test_tags: str = Field(description="A single label that best describes the test, out of: ['happy path', 'edge case','other']")
@@ -89,21 +88,12 @@ existing_test_function_signature: |
 new_tests:
 - test_behavior: |
     Test that the function returns the correct output for a single element list
-{%- if language in ["python","java"] %}
   lines_to_cover: |
     [1,2,5, ...]
   test_name: |
     test_single_element_list
-{%- else %}
-  test_name: |
-    ...
-{%- endif %}
   test_code: |
-{%- if language in ["python"] %}
     def ...
-{%- else %}
-    ...
-{%- endif %}
   new_imports_code: |
     ""
   test_tags: happy path
