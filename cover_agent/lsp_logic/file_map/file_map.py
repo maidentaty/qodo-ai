@@ -13,8 +13,8 @@ from cover_agent.lsp_logic.file_map.queries.get_queries import get_queries_schem
 
 class FileMap:
     """
-    This class is used to summarize the content of a file using tree-sitter queries.
-    Supported languages: C, C++, C#, elisp, elixir, go, java, javascript, ocaml, php, python, ql, ruby, rust, typescript
+    This class is used to summarize the content of Python files using tree-sitter queries.
+    Supports Python syntax analysis for generating code summaries and context.
     """
 
     def __init__(
