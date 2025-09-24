@@ -10,7 +10,6 @@ import time
 from pathlib import Path
 from urllib.parse import unquote, urlparse
 
-# import git
 
 # from cover_agent.lsp_logic.utils import io
 
@@ -91,27 +90,6 @@ class ChdirTemporaryDirectory(IgnorantTemporaryDirectory):
             except FileNotFoundError:
                 pass
         super().__exit__(exc_type, exc_val, exc_tb)
-
-
-# class GitTemporaryDirectory(ChdirTemporaryDirectory):
-#     def __enter__(self):
-#         dname = super().__enter__()
-#         self.repo = make_repo(dname)
-#         return dname
-#
-#     def __exit__(self, exc_type, exc_val, exc_tb):
-#         del self.repo
-#         super().__exit__(exc_type, exc_val, exc_tb)
-#
-#
-# def make_repo(path=None):
-#     if not path:
-#         path = "."
-#     repo = git.Repo.init(path)
-#     repo.config_writer().set_value("user", "name", "Test User").release()
-#     repo.config_writer().set_value("user", "email", "testuser@example.com").release()
-#
-#     return repo
 
 
 def is_image_file(file_name):
@@ -433,35 +411,7 @@ def is_forbidden_directory(d_path, language):
             "dist/",  # Distribution directories
             "build/",  # Build directories
         ]
-    elif language == "javascript" or language == "typescript":
-        directories_to_ignore = [
-            "node_modules/",  # Dependencies installed by npm or yarn
-            "dist/",  # Common output directory for built files
-            "build/",  # Another common output directory for built files
-            "coverage/",  # Test coverage reports
-            ".cache/",  # Cache directory (used by some build tools)
-            ".next/",  # Next.js build output
-            ".nuxt/",  # Nuxt.js build output
-            ".DS_Store",  # macOS folder attributes
-        ]
-    elif language == "java":
-        directories_to_ignore = [
-            "target/",  # Maven build directory
-            "build/",  # Gradle build directory
-            ".gradle/",  # Gradle-specific files and caches
-            ".idea/",  # IntelliJ IDEA settings
-            ".iml",  # IntelliJ IDEA module files
-            ".classpath",  # Eclipse project file
-            ".project",  # Eclipse project file
-            "out/",  # Output directory for IntelliJ IDEA
-        ]
-    elif language == "rust":
-        directories_to_ignore = [
-            "target/",  # Default output directory for compiled artifacts
-            "Cargo.lock",  # Lock file for cargo dependencies (ignored for libraries, kept for binaries)
-            ".cargo/",  # Cargo cache directory
-        ]
-    if any([directory in d_path for directory in directories_to_ignore]):
+        if any([directory in d_path for directory in directories_to_ignore]):
         return True
 
     return False
