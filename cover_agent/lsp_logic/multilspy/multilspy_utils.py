@@ -1,5 +1,5 @@
 """
-This file contains various utility functions like I/O operations, handling paths, etc.
+This file contains various utility functions for Python + LSP usage.
 """
 
 import gzip
@@ -12,7 +12,6 @@ import uuid
 
 import platform
 import subprocess
-from enum import Enum
 
 from cover_agent.lsp_logic.multilspy.multilspy_exceptions import MultilspyException
 from pathlib import PurePath, Path
@@ -26,9 +25,6 @@ class TextUtils:
 
     @staticmethod
     def get_line_col_from_index(text: str, index: int) -> Tuple[int, int]:
-        """
-        Returns the zero-indexed line and column number of the given index in the given text
-        """
         l = 0
         c = 0
         idx = 0
@@ -39,14 +35,10 @@ class TextUtils:
             else:
                 c += 1
             idx += 1
-
         return l, c
 
     @staticmethod
     def get_index_from_line_col(text: str, line: int, col: int) -> int:
-        """
-        Returns the index of the given zero-indexed line and column number in the given text
-        """
         idx = 0
         while line > 0:
             assert idx < len(text), (idx, len(text), text)
@@ -60,9 +52,6 @@ class TextUtils:
     def get_updated_position_from_line_and_column_and_edit(
         l: int, c: int, text_to_be_inserted: str
     ) -> Tuple[int, int]:
-        """
-        Utility function to get the position of the cursor after inserting text at a given line and column.
-        """
         num_newlines_in_gen_text = text_to_be_inserted.count("\n")
         if num_newlines_in_gen_text > 0:
             l += num_newlines_in_gen_text
@@ -79,16 +68,10 @@ class PathUtils:
 
     @staticmethod
     def uri_to_path(uri: str) -> str:
-        """
-        Converts a URI to a file path. Works on both Linux and Windows.
-
-        This method was obtained from https://stackoverflow.com/a/61922504
-        """
         try:
             from urllib.parse import urlparse, unquote
             from urllib.request import url2pathname
         except ImportError:
-            # backwards compatability
             from urlparse import urlparse
             from urllib import unquote, url2pathname
         parsed = urlparse(uri)
@@ -103,9 +86,6 @@ class FileUtils:
 
     @staticmethod
     def read_file(logger: MultilspyLogger, file_path: str) -> str:
-        """
-        Reads the file at the given path and returns the contents as a string.
-        """
         encodings = ["utf-8-sig", "utf-16"]
         try:
             for encoding in encodings:
@@ -126,9 +106,6 @@ class FileUtils:
 
     @staticmethod
     def download_file(logger: MultilspyLogger, url: str, target_path: str) -> None:
-        """
-        Downloads the file from the given URL to the given {target_path}
-        """
         try:
             response = requests.get(url, stream=True, timeout=60)
             if response.status_code != 200:
@@ -136,20 +113,17 @@ class FileUtils:
                     f"Error downloading file '{url}': {response.status_code} {response.text}",
                     logging.ERROR,
                 )
-                raise MultilspyException("Error downoading file.")
+                raise MultilspyException("Error downloading file.")
             with open(target_path, "wb") as f:
                 shutil.copyfileobj(response.raw, f)
         except Exception as exc:
             logger.log(f"Error downloading file '{url}': {exc}", logging.ERROR)
-            raise MultilspyException("Error downoading file.") from None
+            raise MultilspyException("Error downloading file.") from None
 
     @staticmethod
     def download_and_extract_archive(
         logger: MultilspyLogger, url: str, target_path: str, archive_type: str
     ) -> None:
-        """
-        Downloads the archive from the given URL having format {archive_type} and extracts it to the given {target_path}
-        """
         try:
             tmp_files = []
             tmp_file_name = str(
@@ -212,28 +186,13 @@ class PlatformId(str, Enum):
     DARWIN_x64 = "darwin-x64"
 
 
-class DotnetVersion(str, Enum):
-    """
-    multilspy supported dotnet versions
-    """
-
-    V4 = "4"
-    V6 = "6"
-    V7 = "7"
-    V8 = "8"
-    VMONO = "mono"
-
-
 class PlatformUtils:
     """
-    This class provides utilities for platform detection and identification.
+    Utilities for platform detection (Python-only cleanup).
     """
 
     @staticmethod
     def get_platform_id() -> PlatformId:
-        """
-        Returns the platform id for the current system
-        """
         system = platform.system()
         machine = platform.machine()
         bitness = platform.architecture()[0]
@@ -257,38 +216,3 @@ class PlatformUtils:
             raise MultilspyException(
                 "Unknown platform: " + system + " " + machine + " " + bitness
             )
-
-    @staticmethod
-    def get_dotnet_version() -> DotnetVersion:
-        """
-        Returns the dotnet version for the current system
-        """
-        try:
-            result = subprocess.run(
-                ["dotnet", "--list-runtimes"], capture_output=True, check=True
-            )
-            version = ""
-            for line in result.stdout.decode("utf-8").split("\n"):
-                if line.startswith("Microsoft.NETCore.App"):
-                    version = line.split(" ")[1]
-                    break
-            if version == "":
-                raise MultilspyException("dotnet not found on the system")
-            if version.startswith("8"):
-                return DotnetVersion.V8
-            elif version.startswith("7"):
-                return DotnetVersion.V7
-            elif version.startswith("6"):
-                return DotnetVersion.V6
-            elif version.startswith("4"):
-                return DotnetVersion.V4
-            else:
-                raise MultilspyException("Unknown dotnet version: " + version)
-        except subprocess.CalledProcessError:
-            try:
-                result = subprocess.run(
-                    ["mono", "--version"], capture_output=True, check=True
-                )
-                return DotnetVersion.VMONO
-            except subprocess.CalledProcessError:
-                raise MultilspyException("dotnet or mono not found on the system")
