@@ -7,17 +7,8 @@ from dataclasses import dataclass
 
 
 class Language(str, Enum):
-    """
-    Possible languages with Multilspy.
-    """
-
-    CSHARP = "csharp"
     PYTHON = "python"
-    RUST = "rust"
-    JAVA = "java"
-    TYPESCRIPT = "typescript"
-    JAVASCRIPT = "javascript"
-
+   
     def __str__(self) -> str:
         return self.value
 
